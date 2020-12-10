@@ -1,5 +1,6 @@
 {
   "resources": [
+    {"id":{"name":"Llama","path":"sprites/Llama/Llama.yy",},"order":1,},
     {"id":{"name":"entity","path":"scripts/entity/entity.yy",},"order":0,},
     {"id":{"name":"spr_player_test","path":"sprites/spr_player_test/spr_player_test.yy",},"order":0,},
     {"id":{"name":"the_grid","path":"objects/the_grid/the_grid.yy",},"order":0,},
