@@ -1,4 +1,4 @@
-function entity(_ob, _x, _y) constructor{
+ function entity(_ob, _x, _y) constructor{
 	ob = _ob;
 	posx = _x;
 	posy = _y;
