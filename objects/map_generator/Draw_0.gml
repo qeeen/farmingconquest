@@ -1,1 +1,0 @@
-struct.draw_the_grid();

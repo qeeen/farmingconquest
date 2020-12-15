@@ -26,55 +26,64 @@ function mapgen() constructor{
 		for(var k = 0; k < base_height; k++){
 			for(var i = 0; i < base_width; i++){
 				g_map[i][k + height/2 - base_height/2] = "B";
+				if(i == base_width-1 && k == base_height/2){
+					g_map[i][k + height/2 - base_height/2] = "H";
+				}
 			}
 		}
 	
 		for(var k = 0; k < base_height; k++){
 			for(var i = 0; i < base_width; i++){
 				g_map[i + width-base_width][k + height/2 - base_height/2] = "E";
+				if(i == 0 && k == base_height/2){
+					g_map[i + width-base_width][k + height/2 - base_height/2] = "H";
+				}
 			}
 		}
 
 	}
 	
 	function add_neutral(){
-		for(var n = 0; n < 8; n++){
-			var found = false;
-			var startx = 0;
-			var starty = 0
-			while(!found){
-				startx = irandom_range(0, width-1);
-				starty = irandom_range(0, height-1);
-				
-				failed = false;
-				for(var k = 0; k < 12; k++){
-					for(var i = 0; i < 12; i++){
-						if(i+startx >= width || k+starty >= height){
-							failed = true;
-							break;
-						}
-							
-						if(g_map[i+startx][k+starty] != " "){
-							failed = true;
-							break;
+		var c_size = 12;
+		
+		for(var n = 0; n < 16; n++){
+			var options = ds_list_create();
+			for(var mapy = 0; mapy < height - c_size; mapy++){
+				for(var mapx = 0; mapx < width - c_size; mapx++){
+					if(g_map[mapx][mapy] != " "){
+						continue;
+					}
+					var found = true;
+					for(var k = 0; k < c_size; k++){
+						for(var i = 0; i < c_size; i++){
+							if(g_map[mapx+i][mapy+k] != " "){
+								found = false;
+								break;
+							}
 						}
 					}
-				}
-				if(!failed){
-					found = true;
+					if(found){
+						ds_list_add(options, [mapx, mapy]);
+					}
 				}
 			}
+			if(ds_list_size(options) == 0){
+				break;
+			}
+			var start = options[| irandom_range(0, ds_list_size(options)-1)];
+			var startx = start[0];
+			var starty = start[1];
 			
 			var c = create_cluster();
-			for(var k = 0; k < 12; k++){
-				for(var i = 0; i < 12; i++){
+			for(var k = 0; k < c_size; k++){
+				for(var i = 0; i < c_size; i++){
 					g_map[startx + i][starty + k] = c[i][k];
 				}
 			}
 			g_map[startx + 6][starty + 6] = "H";
+			
+			ds_list_destroy(options);
 		}
-		
-		
 	}
 
 	function add_hallways(){
@@ -91,6 +100,8 @@ function mapgen() constructor{
 		for(var i = 0; i < array_length(centers); i++){
 			var shortest_coords = -1;
 			var shortest_distance = -1;
+			var sec_shortest_coords = -1;
+			var sec_shortest_distance = -1;
 			var x1 = centers[i][0];
 			var y1 = centers[i][1];
 			for(var k = 0; k < array_length(centers); k++){
@@ -103,13 +114,39 @@ function mapgen() constructor{
 				
 				var c_distance = sqrt(sqr(x2-x1) + sqr(y2-y1));
 				if(shortest_coords == -1 || shortest_distance > c_distance){
+					sec_shortest_coords = shortest_coords;
+					sec_shortest_distance = shortest_distance;
 					shortest_coords = centers[k];
 					shortest_distance = c_distance;
+				}
+				else if(sec_shortest_coords = -1 || sec_shortest_distance > c_distance){
+					sec_shortest_coords = centers[k];
+					sec_shortest_distance = c_distance;
 				}
 			}
 			
 			var x2 = shortest_coords[0];
 			var y2 = shortest_coords[1];
+			for(var m = 0; m < 100; m++){
+				new_pos_x = floor(lerp(x1, x2, m/100.0));
+				new_pos_y = floor(lerp(y1, y2, m/100.0));
+				
+				if(g_map[new_pos_x][new_pos_y] != "H"){
+					g_map[new_pos_x][new_pos_y] = "C";
+				}
+				if(g_map[new_pos_x+1][new_pos_y] != "H"){
+					g_map[new_pos_x+1][new_pos_y] = "C";
+				}
+				if(g_map[new_pos_x][new_pos_y+1] != "H"){
+					g_map[new_pos_x][new_pos_y+1] = "C";
+				}
+				if(g_map[new_pos_x+1][new_pos_y+1] != "H"){
+					g_map[new_pos_x+1][new_pos_y+1] = "C";
+				}
+			}
+			
+			x2 = sec_shortest_coords[0];
+			y2 = sec_shortest_coords[1];
 			for(var m = 0; m < 100; m++){
 				new_pos_x = floor(lerp(x1, x2, m/100.0));
 				new_pos_y = floor(lerp(y1, y2, m/100.0));
@@ -265,7 +302,7 @@ function mapgen() constructor{
 	function draw_the_grid(){
 		for(var k = 0; k < height; k++){
 			for(var i = 0; i < width; i++){
-				draw_text(i*16, k*16, g_map[i][k]);
+				draw_text(i*16 + 100, k*16, g_map[i][k]);
 			}
 		}
 	}
