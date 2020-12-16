@@ -49,7 +49,7 @@ function mapgen() constructor{
 		var c_size = 12;
 		/*
 		Essentially this checks every possible 12x12 (based on the cluster size) area within g_map, and marks which ones are completely empty
-		afterwards it picks one at random, creates a cluster and places it that the chosen position
+		afterwards it picks one at random, creates a cluster and places it at the chosen position
 		this process is then repeated up to sixteen times, essentially ending once there are no more completely open 12x12 areas
 		*/
 		for(var n = 0; n < 16; n++){
