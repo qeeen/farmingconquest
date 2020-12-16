@@ -8,7 +8,7 @@ function BFS_shortest_path(startNode, endNode){
 
 	//Create an array from the grid that marks 1 as traversable spaces and 0 as barriers.
 	for (var i = 0; i < array_length(grid); i++) {
-		if (ds_list_find_value(the_grid.grid, i) == noone) {
+		if (ds_list_size(the_grid.grid[| i]) == 0) {
 			grid[i] = 1;
 		} else {
 			grid[i] = 0;
@@ -45,7 +45,7 @@ function BFS_shortest_path(startNode, endNode){
         }
 		
 		//Check if the node to the left of the current node is within the bounds of the grid
-        if ((currentNode - 1) % 5 != 4) {
+        if ((currentNode - 1) % 5 != 4 && currentNode - 1 > 0) {
             //check if the node to the left of the current node is a space and not a wall
             if (grid[currentNode - 1] == 1) {
                 //check if the node to the left of the current node has been visited
@@ -111,13 +111,7 @@ function BFS_shortest_path(startNode, endNode){
     for (var i = 0; i < array_length(shortestPathArray); i++) {
         shortestPathArray[(array_length(shortestPathArray) - 1) - i] = ds_list_find_value(shortestPath, i);
     }
-	
-	var s = "Shortest Path: "
-	for (var i = 0; i < array_length(shortestPathArray); i++) {
-		s = s + shortestPathArray[i] + " ";
-	}
-	draw_text(20, 20, s);
-	
+
 	return shortestPathArray;
 	
 } 
