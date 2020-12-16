@@ -9,7 +9,7 @@
 		if(k_r)
 			dir = 0;
 		if(k_l)
-			dir = 2; 
+			dir = 2;
 		if(k_d)
 			dir = 1;
 		if(k_u)
