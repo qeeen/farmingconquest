@@ -90,7 +90,8 @@ function BFS_shortest_path(startNode, endNode){
         if (queueIndex + 1 < ds_list_size(queue)) {
             queueIndex++;
 			currentNode = ds_list_find_value(queue, queueIndex);
-        } else {
+        } 
+		else {
             return noone;
         }
 		
@@ -113,9 +114,9 @@ function BFS_shortest_path(startNode, endNode){
 	
 	var s = "Shortest Path: "
 	for (var i = 0; i < array_length(shortestPathArray); i++) {
-		s += shortestPathArray[i] + " ";
+		s = s + shortestPathArray[i] + " ";
 	}
-	draw_text(100, 100, s);
+	draw_text(20, 20, s);
 	
 	return shortestPathArray;
 	
