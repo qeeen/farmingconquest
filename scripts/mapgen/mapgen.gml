@@ -7,13 +7,15 @@ function mapgen() constructor{
 	base_width = 8;
 	base_height = 8;
 	
+	//obviously generates the actual map, which is stored in g_map
+	// "C"s are neutral spaces, "B"s and "E"s are for each side, and "H"s basically mark the center of each section
 	function create_map(){
 		map_init();
 		add_neutral();
 		add_hallways();
-		//print_the_grid()
 	}
 
+	//initializses the g_map, and adds the player bases
 	function map_init(){
 		//initialize the grid	
 		for(var k = 0; k < height; k++){
@@ -22,7 +24,7 @@ function mapgen() constructor{
 			}
 		}
 	
-		//create the bases
+		//create the 2 bases
 		for(var k = 0; k < base_height; k++){
 			for(var i = 0; i < base_width; i++){
 				g_map[i][k + height/2 - base_height/2] = "B";
@@ -31,7 +33,6 @@ function mapgen() constructor{
 				}
 			}
 		}
-	
 		for(var k = 0; k < base_height; k++){
 			for(var i = 0; i < base_width; i++){
 				g_map[i + width-base_width][k + height/2 - base_height/2] = "E";
@@ -43,9 +44,14 @@ function mapgen() constructor{
 
 	}
 	
+	//adds all the neutral clusters to the map
 	function add_neutral(){
 		var c_size = 12;
-		
+		/*
+		Essentially this checks every possible 12x12 (based on the cluster size) area within g_map, and marks which ones are completely empty
+		afterwards it picks one at random, creates a cluster and places it that the chosen position
+		this process is then repeated up to sixteen times, essentially ending once there are no more completely open 12x12 areas
+		*/
 		for(var n = 0; n < 16; n++){
 			var options = ds_list_create();
 			for(var mapy = 0; mapy < height - c_size; mapy++){
@@ -86,9 +92,12 @@ function mapgen() constructor{
 		}
 	}
 
+	//this pretty simple takes each "H" or hook on the map, and connects it to its 2 closest hooks with a 3 tile wide line
 	function add_hallways(){
 		centers[0] = [0, 0];
 		current_cent = 0;
+		
+		//find where each of the "H"s are located and store them in a list
 		for(var k = 0; k < height; k++){
 			for(var i = 0; i < width; i++){
 				if(g_map[i][k] == "H"){
@@ -97,6 +106,8 @@ function mapgen() constructor{
 				}
 			}
 		}
+		
+		//the process is run for each hook
 		for(var i = 0; i < array_length(centers); i++){
 			var shortest_coords = -1;
 			var shortest_distance = -1;
@@ -104,6 +115,8 @@ function mapgen() constructor{
 			var sec_shortest_distance = -1;
 			var x1 = centers[i][0];
 			var y1 = centers[i][1];
+			
+			//for the current hook find the 2 closest ones
 			for(var k = 0; k < array_length(centers); k++){
 				if(centers[i] == centers[k]){
 					continue;
@@ -125,6 +138,7 @@ function mapgen() constructor{
 				}
 			}
 			
+			//draw a line between the current hook and the closest one
 			var x2 = shortest_coords[0];
 			var y2 = shortest_coords[1];
 			for(var m = 0; m < 100; m++){
@@ -145,6 +159,7 @@ function mapgen() constructor{
 				}
 			}
 			
+			//draw a line between the current hook and the second closest one
 			x2 = sec_shortest_coords[0];
 			y2 = sec_shortest_coords[1];
 			for(var m = 0; m < 100; m++){
@@ -167,7 +182,13 @@ function mapgen() constructor{
 		}
 	}
 
+	//creates a cluster to create the main sections of the map
 	function create_cluster(){
+		/*
+		This creates a 12x12 area(can be modified), and places 3x3 and 2x2 squares within it at random
+		it then for each empty position, checks all 8 adjacent positions and fills itself if it is adjacent to at least 4 via the smooth function(also subject to change)
+		the 12x12 matrix is then returned
+		*/
 		var mini_w = 12;
 		var mini_h = 12;
 		mini_grid[0][0] = "";
@@ -203,6 +224,7 @@ function mapgen() constructor{
 		return smooth(mini_grid);
 	}
 
+	//look above, extension of "create_cluster()"
 	function smooth(data){
 		new_data[0][0] = "";
 		data_width = array_length(data);
@@ -277,28 +299,8 @@ function mapgen() constructor{
 		
 		return new_data;
 	}
-
-	function average(data){
-		sum = 0.0;
-		for(var k = 0; k < array_length(data[0]); k++){
-			for(var i = 0; i < array_length(data); i++){
-				sum += data[i][k];
-			}
-		}
-		return sum/(array_length(data[0])*array_length(data));
-	}
-
-	function print_the_grid(){
-		var str = "";
-		for(var k = 0; k < height; k++){
-			for(var i = 0; i < width; i++){
-				str = str + g_map[i][k];
-			}
-			str = str + "\n";
-		}
-		show_message(str);
-	}
 	
+	//draws the grid to text, for debugging
 	function draw_the_grid(){
 		for(var k = 0; k < height; k++){
 			for(var i = 0; i < width; i++){
