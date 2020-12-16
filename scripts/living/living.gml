@@ -1,4 +1,4 @@
- function living(_ob, _x, _y) : entity(_ob, _x, _y) constructor{
+function living(_ob, _x, _y) : entity(_ob, _x, _y) constructor{
 	function input(){
 	}
 	
