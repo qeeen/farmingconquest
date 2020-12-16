@@ -1,5 +1,5 @@
  function living(_ob, _x, _y) : entity(_ob, _x, _y) constructor{
-	function input(){
+	function input() {
 	}
 	
 	function req_switch(the_request, args){
